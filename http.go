@@ -1,7 +1,9 @@
 package gompv
 
-import "encoding/json"
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 // JSONRequest send to the server.
 type JSONRequest struct {
@@ -20,13 +22,16 @@ type httpServerHandler struct {
 
 // HTTPServerHandler returns a http.Handler to access a client via a lowlevel json-api.
 // Register as route on your server:
-// 		http.Handle("/mpv", mpv.HTTPHandler(lowlevelclient)
+//
+//	http.Handle("/mpv", mpv.HTTPHandler(lowlevelclient)
 //
 // Use api:
-// 		POST http://host/lowlevel Body: { "command": ["get_property", "fullscreen"] }
+//
+//	POST http://host/lowlevel Body: { "command": ["get_property", "fullscreen"] }
 //
 // Result:
-// 		{"error":"success","data":false}
+//
+//	{"error":"success","data":false}
 func HTTPServerHandler(client LLClient) http.Handler {
 	return &httpServerHandler{
 		llclient: client,
@@ -39,8 +44,7 @@ func (h *httpServerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var req JSONRequest
-	dec := json.NewDecoder(r.Body)
-	err := dec.Decode(&req)
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, "Can not decode request", http.StatusBadRequest)
 		return
