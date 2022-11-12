@@ -1,4 +1,4 @@
-package mpv
+package gompv
 
 import "encoding/json"
 import "net/http"
