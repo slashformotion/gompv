@@ -2,6 +2,7 @@ package gompv
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -65,7 +66,7 @@ func (h *httpServerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	b, err := json.Marshal(jsonResp)
 	if err != nil {
-		http.Error(w, "", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("failed to marshall response %d", resp.RequestID), http.StatusInternalServerError)
 		return
 	}
 	_, err = w.Write(b)
