@@ -26,6 +26,7 @@ type request struct {
 	Response  chan *Response `json:"-"`
 }
 
+// create a new request
 func newRequest(cmd ...interface{}) *request {
 	return &request{
 		Command:   cmd,
@@ -34,7 +35,7 @@ func newRequest(cmd ...interface{}) *request {
 	}
 }
 
-// LLClient is the most low level interface
+// LLClient is the most Low Level Client for mpv
 type LLClient interface {
 	Exec(command ...interface{}) (*Response, error)
 }
@@ -49,7 +50,7 @@ type IPCClient struct {
 	reqMap map[int]*request // Maps RequestIDs to Requests for response association
 }
 
-// NewIPCClient creates a new IPCClient connected to the given socket.
+// NewIPCClient creates a new IPCClient connected to the given socket address.
 func NewIPCClient(socket string) *IPCClient {
 	c := &IPCClient{
 		socket:  socket,
@@ -131,8 +132,8 @@ func (c *IPCClient) readloop(conn io.Reader) {
 
 // Timeout errors while communicating via IPC
 var (
-	ErrTimeoutSend = errors.New("Timeout while sending command")
-	ErrTimeoutRecv = errors.New("Timeout while receiving response")
+	ErrTimeoutSend = errors.New("timeout while sending command")
+	ErrTimeoutRecv = errors.New("timeout while receiving response")
 )
 
 // Exec executes a command via ipc and returns the response.
