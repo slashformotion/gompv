@@ -19,20 +19,24 @@ func NewClient(llclient LLClient) *Client {
 	}
 }
 
+type LoadFileMode string
+
 // Mode options for Loadfile
 const (
-	LoadFileModeReplace    = "replace"
-	LoadFileModeAppend     = "append"
-	LoadFileModeAppendPlay = "append-play" // Starts if nothing is playing
+	LoadFileModeReplace    LoadFileMode = "replace"
+	LoadFileModeAppend     LoadFileMode = "append"
+	LoadFileModeAppendPlay LoadFileMode = "append-play" // Starts if nothing is playing
 )
 
 // Loadfile loads a file, it either replaces the currently playing file (LoadFileModeReplace),
 // appends to the current playlist (LoadFileModeAppend) or appends to playlist and plays if
 // nothing is playing right now (LoadFileModeAppendPlay)
-func (c *Client) Loadfile(path string, mode string) error {
-	_, err := c.Exec("loadfile", path, mode)
+func (c *Client) Loadfile(path string, mode LoadFileMode) error {
+	_, err := c.Exec("loadfile", path, string(mode))
 	return err
 }
+
+type SeekMode string
 
 // Mode options for Seek
 const (
@@ -42,8 +46,8 @@ const (
 
 // Seek seeks to a position in the current file.
 // Use mode to seek relative to current position (SeekModeRelative) or absolute (SeekModeAbsolute).
-func (c *Client) Seek(n int, mode string) error {
-	_, err := c.Exec("seek", strconv.Itoa(n), mode)
+func (c *Client) Seek(n int, mode SeekMode) error {
+	_, err := c.Exec("seek", strconv.Itoa(n), string(mode))
 	return err
 }
 
@@ -59,16 +63,18 @@ func (c *Client) PlaylistPrevious() error {
 	return err
 }
 
-// Mode options for LoadList
+// Mode options for LoadListMode
+type LoadListMode string
+
 const (
-	LoadListModeReplace = "replace"
-	LoadListModeAppend  = "append"
+	LoadListModeReplace LoadListMode = "replace"
+	LoadListModeAppend  LoadListMode = "append"
 )
 
 // LoadList loads a playlist from path. It can either replace the current playlist (LoadListModeReplace)
 // or append to the current playlist (LoadListModeAppend).
-func (c *Client) LoadList(path string, mode string) error {
-	_, err := c.Exec("loadlist", path, mode)
+func (c *Client) LoadList(path string, mode LoadListMode) error {
+	_, err := c.Exec("loadlist", path, string(mode))
 	return err
 }
 
