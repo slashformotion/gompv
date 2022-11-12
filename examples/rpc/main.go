@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/rpc"
 
-	"github.com/blang/mpv"
+	mpv "github.com/slashformotion/gompv"
 )
 
 func main() {

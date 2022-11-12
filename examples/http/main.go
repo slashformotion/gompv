@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/blang/mpv"
+	mpv "github.com/slashformotion/gompv"
 )
 
 func main() {
