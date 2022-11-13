@@ -40,6 +40,9 @@ type LLClient interface {
 	Exec(command ...interface{}) (*Response, error)
 }
 
+// Check interface compliance at compile time
+var _ LLClient = (*IPCClient)(nil)
+
 // IPCClient is a low-level IPC client to communicate with the mpv player via socket.
 type IPCClient struct {
 	socket  string
@@ -73,8 +76,6 @@ func (c *IPCClient) dispatch(resp *Response) {
 			return
 		}
 		// Discard response
-	} else { // Event
-		// TODO: Implement Event support
 	}
 }
 
@@ -94,21 +95,18 @@ func (c *IPCClient) writeloop(conn io.Writer) {
 		if !ok {
 			panic("Communication channel closed")
 		}
-		b, err := json.Marshal(req)
+		payload, err := json.Marshal(req)
 		if err != nil {
-			// TODO: Discard request, maybe send error downstream
-			// log.Printf("Discard request %v with error: %s", req, err)
+			continue
+		}
+		payload = append(payload, '\n')
+		_, err = conn.Write(payload)
+		if err != nil {
 			continue
 		}
 		c.mu.Lock()
 		c.reqMap[req.RequestID] = req
-		c.mu.Unlock()
-		b = append(b, '\n')
-		_, err = conn.Write(b)
-		if err != nil {
-			// TODO: Discard request, maybe send error downstream
-			// TODO: Remove from reqMap?
-		}
+		c.mu.Unlock() // can't use defer here
 	}
 }
 
@@ -117,13 +115,11 @@ func (c *IPCClient) readloop(conn io.Reader) {
 	for {
 		data, err := rd.ReadBytes('\n')
 		if err != nil {
-			// TODO: Handle error
 			continue
 		}
 		var resp Response
 		err = json.Unmarshal(data, &resp)
 		if err != nil {
-			// TODO: Handle error
 			continue
 		}
 		c.dispatch(&resp)
